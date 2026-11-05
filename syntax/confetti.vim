@@ -28,12 +28,13 @@ syntax match confettiInlineDirective /[A-Za-z_][A-Za-z0-9_-]*\ze\%($\|[[:space:]
 " Check the separator without consuming it, including closing braces.
 syntax match confettiOperator /\%(^\|[[:space:]{};]\)\@<=\%(&&\|||\|==\|!=\|<=\|>=\|[<>+*\/-]\)\ze\%($\|[[:space:]{};]\)/
 
-" Numeric-looking arguments can include dots and alphabetic suffixes (3s,
-" 4000k, 6.14), but should not color a prefix of an arbitrary identifier.
+" Numeric-looking arguments can include leading decimal points, underscores,
+" and alphabetic suffixes (.1_25, 4000k, 6.14), without coloring a prefix
+" of an arbitrary identifier.
 " The lookbehind checks the separator without consuming it, which also lets
 " numbers immediately after an opening brace match after nextgroup checks.
 " Confetti leaves the meaning of numeric-looking values to the application.
-syntax match confettiNumber /\%(^\|[[:space:]{};]\)\@<=[-+]\=[0-9][0-9_.]*\%([eE][-+]\=[0-9][0-9_]*\)\=[A-Za-z]*\ze\%($\|[[:space:]{};]\)/
+syntax match confettiNumber /\%(^\|[[:space:]{};]\)\@<=[-+]\=\%([0-9][0-9_.]*\|\.[0-9][0-9_]*\)\%([eE][-+]\=[0-9][0-9_]*\)\=[A-Za-z]*\ze\%($\|[[:space:]{};]\)/
 
 " nextgroup recognizes adjacent directives even without an optional ';'.
 syntax match confettiDelimiter /[{};]/ nextgroup=confettiInlineDirective skipwhite
