@@ -111,6 +111,76 @@ manually for the current buffer.
 | `syntax/confetti.vim`   | Highlight the generic Confetti syntax |
 | `ftplugin/confetti.vim` | Set buffer-local comment formatting   |
 
+## Nix usage example
+
+Here is a simple [Nix](https://nixos.org) Vim configuration example.
+
+Create `vim-confetti-example.nix` file:
+
+```nix
+{ pkgs ? import <nixpkgs> {} }:
+
+let
+  confetti-vim-syntax-source = pkgs.fetchFromGitHub {
+    owner = "unclechu";
+    repo = "confetti-vim-syntax";
+    # Pick the top `master` branch commit hash of
+    # https://github.com/unclechu/confetti-vim-syntax
+    rev = "ffffffffffffffffffffffffffffffffffffffff";
+    # Try to build it first and put the actual hash here
+    # taken from the build error message.
+    #
+    # For example:
+    #  error: hash mismatch in fixed-output derivation:
+    #    specified: sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+    #       got:    sha256-qSBFy8V9Pnk86MQEIEvKpi/o/7arYDpVnWN6frFEMAA=
+    #
+    # Then replace `pkgs.lib.fakeHash` with the reported hash
+    # and run `nix-build` again.
+    hash = pkgs.lib.fakeHash;
+  };
+
+  confetti-vim-syntax = pkgs.vimUtils.buildVimPlugin {
+    pname = "confetti-vim-syntax";
+    version = "dev";
+    src = confetti-vim-syntax-source;
+  };
+in
+
+# An example Vim configuration that enables Confetti syntax highlighting.
+pkgs.vim.customize {
+  name = "vim-confetti-example";
+
+  vimrcConfig = {
+    packages.confetti.start = [
+      confetti-vim-syntax
+    ];
+
+    customRC = ''
+      filetype plugin on
+      syntax on
+
+      augroup confetti_filetype_configuration
+        autocmd!
+
+        " Enable Confetti hash-sign comments.
+        " Treat dashes as part of words (foo-bar-baz).
+        autocmd FileType confetti setlocal commentstring=#\ %s comments=b:# iskeyword+=45
+
+      augroup END
+    '';
+  };
+}
+```
+
+Then run:
+
+```sh
+nix-build vim-confetti-example.nix
+echo 'foo { bar baz 123 + 321 "some string" }' > example.confetti
+result/bin/vim-confetti-example +'colorscheme unokai' example.confetti
+```
+
 ## Public domain
 
 This plugin is released into the public domain under
