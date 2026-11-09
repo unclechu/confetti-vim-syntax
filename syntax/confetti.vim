@@ -26,7 +26,7 @@ syntax match confettiInlineDirective /[A-Za-z_][A-Za-z0-9_-]*\ze\%($\|[[:space:]
 " Recognize operators only when separated as Confetti arguments, rather
 " than coloring hyphens in identifiers or symbols inside quoted strings.
 " Check the separator without consuming it, including closing braces.
-syntax match confettiOperator /\%(^\|[[:space:]{};]\)\@<=\%(&&\|||\|==\|!=\|<=\|>=\|[<>+*\/-]\)\ze\%($\|[[:space:]{};]\)/
+syntax match confettiOperator /\%(^\|[[:space:]{};]\)\@<=\%(&&\|||\|==\|!=\|<=\|>=\|[=<>+*\/-]\)\ze\%($\|[[:space:]{};]\)/
 
 " Numeric-looking arguments can include leading decimal points, underscores,
 " and alphabetic suffixes (.1_25, 4000k, 6.14), without coloring a prefix
